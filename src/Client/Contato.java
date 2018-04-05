@@ -39,4 +39,10 @@ public class Contato {
     public int getPort() {
         return port;
     }
+
+
+    public String toString()
+    {
+        return this.name + "," + this.address + "," + Integer.toString(this.port) + ";\n";
+    }
 }

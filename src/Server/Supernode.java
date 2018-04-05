@@ -65,7 +65,7 @@ public class Supernode implements Runnable{
 
                         send("LIST:"+this.getUserList(),clientMessage);
 
-                        sendGroupMessage("LOGIN:" + args[1]);
+                        sendGroupMessage("LOGIN:" + args[1]+","+clientMessage.getAddress().toString()+","+Integer.toString(clientMessage.getPort()));
 
                         break;
                     case "logout" :
@@ -75,7 +75,7 @@ public class Supernode implements Runnable{
                             continue;
                         }
                         send("MESSAGE:Usuario deslogado com sucesso", clientMessage);
-                        sendGroupMessage("LOGOUT:"+args[1]);
+                        sendGroupMessage("LOGOUT:"+ args[1]+","+clientMessage.getAddress().toString()+","+Integer.toString(clientMessage.getPort()));
                         break;
                     default:
                         send("Comando nao reconhecido",clientMessage);

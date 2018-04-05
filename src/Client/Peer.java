@@ -7,6 +7,7 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Scanner;
 
 public class Peer {
@@ -46,14 +47,30 @@ public class Peer {
                             System.out.println(args[1]);
                             break;
                         case "LIST" :
+
                             String[] list = args[1].split(";");
+
                             for(String listItem : list)
                             {
-                                if(!contatos.add(new Contato(listItem)))
+                                Contato toAdd = new Contato(listItem);
+
+                                Contato contato = contatos.stream()
+                                        .filter(a -> Objects.equals(a.getName(),toAdd.getName()))
+                                        .findAny()
+                                        .orElse(null);
+
+                                if(contato != null)
                                 {
-                                    System.out.println("Erro ao criar lista de contatos");
+                                    System.out.println("Usuário já está na lista");
+                                    continue;
+                                }
+
+                                if(!contatos.add(toAdd))
+                                {
+                                    System.out.println("Erro ao adicionar usuário na lista de contatos");
                                 }
                             }
+
                             System.out.println("Lista de contato recebida e parseada com sucesso!");
                             break;
                     }
@@ -93,11 +110,32 @@ public class Peer {
 
                     switch (args[0])
                     {
-                        case "LOGIN":
+                        case "LOGIN": // Alguem logou no sistema. Vamos acrescentar essa pessoa na nossa lista de contatos
+
+                            Contato toAdd = new Contato(args[1]);
+
+                            Contato contato = contatos.stream()
+                                    .filter(a -> Objects.equals(a.getName(),toAdd.getName()))
+                                    .findAny()
+                                    .orElse(null);
+
+                            if(contato != null)
+                            {
+                                System.out.println("Usuário já está na lista");
+                                continue;
+                            }
+
+                            if(!contatos.add(toAdd))
+                            {
+                                System.out.println("Erro ao adicionar contato na lista de disponíves");
+                            }
+
+                            System.out.println("Usuário adicionado à lista de contatos");
                             break;
-                        case "LOGOUT":
+                        case "LOGOUT": // Alguem fez logout. Vamos retirar essa pessoa da nossa lista de contatos
+                            contatos.remove(new Contato(args[1]));
                             break;
-                        // @todo : Continuar daqui
+
                     }
                 }
             }
@@ -152,6 +190,12 @@ public class Peer {
 
             command = scanner.nextLine();
 
+            if(command.equals("printList"))
+            {
+                System.out.println(getUserList());
+                continue;
+            }
+
             sendMessage(command);
 
         }
@@ -161,6 +205,19 @@ public class Peer {
     {
         DatagramPacket datagramPacket = new DatagramPacket(message.getBytes(),message.length(),address,PORT);
         clientSocket.send(datagramPacket);
+    }
+
+
+    private static String getUserList()
+    {
+        String list = "";
+
+        for(Contato contato : contatos)
+        {
+            list = list.concat(contato.toString());
+        }
+
+        return list;
     }
 
 }
