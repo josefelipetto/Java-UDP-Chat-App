@@ -47,11 +47,13 @@ public class Supernode implements Runnable{
                 switch (args[0])
                 {
                     case "create" :
+
                         if( ! this.createUser(args[1],args[2], clientMessage) )
                         {
                             send("MESSAGE:ERROR",clientMessage);
                             continue;
                         }
+
                         send("MESSAGE:Usuario criado com sucesso",clientMessage);
 
                         break;

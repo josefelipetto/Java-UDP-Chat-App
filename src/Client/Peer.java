@@ -1,5 +1,7 @@
 package Client;
 
+import java.awt.*;
+import java.io.Console;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -194,6 +196,14 @@ public class Peer {
             {
                 System.out.println(getUserList());
                 continue;
+            }
+
+            String[] args = command.split(",");
+
+            if(args[0].equals("talkTo"))
+            {
+                Thread chat = new Thread( new Chat(args[1]+","+args[2]+","+args[3]) );
+                chat.start();
             }
 
             sendMessage(command);
