@@ -2,36 +2,15 @@ package Client;
 
 import java.io.IOException;
 import java.net.*;
+import java.util.Objects;
 import java.util.Scanner;
 
-public class Chat implements Runnable{
+public class Chat {
 
     private static String name;
     private static InetAddress ipAddress;
     private static int port;
     private static DatagramSocket clientSocket;
-
-    static class MessageListener implements Runnable
-    {
-        @Override
-        public void run() {
-            while (true)
-            {
-                try
-                {
-                    DatagramPacket datagramResponse = new DatagramPacket(new byte[65507], 65507);
-
-                    clientSocket.receive(datagramResponse);
-
-                }
-                catch (IOException e)
-                {
-                    e.printStackTrace();
-                }
-
-            }
-        }
-    }
 
     public Chat(String line)
     {
@@ -55,27 +34,38 @@ public class Chat implements Runnable{
 
     public void run()
     {
-        Thread messageListener = new Thread(new MessageListener());
-        messageListener.start();
 
         Scanner scanner = new Scanner(System.in);
 
         String message;
 
-        while (true)
+        System.out.print("Digite uma mensagem: ");
+
+        message = scanner.nextLine();
+
+        try
         {
-            System.out.print("Digite um comando: ");
+            sendMessage("MESSAGE:"+message);
 
-            message = scanner.nextLine();
+            DatagramPacket datagramResponse = new DatagramPacket(new byte[65507], 65507);
 
-            try
-            {
-                sendMessage(message);
-            }
-            catch (IOException e)
-            {
-                e.printStackTrace();
-            }
+            System.out.println("Esperando uma resposta...");
+            clientSocket.receive(datagramResponse);
+
+            String response = new String(
+                    datagramResponse.getData(),
+                    datagramResponse.getOffset(),
+                    datagramResponse.getLength()
+            );
+
+            System.out.print("Resposta recebida: ");
+
+            System.out.println(response);
+        }
+
+        catch (IOException e)
+        {
+            e.printStackTrace();
         }
     }
 

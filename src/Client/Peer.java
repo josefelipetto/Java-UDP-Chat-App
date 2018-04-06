@@ -1,7 +1,5 @@
 package Client;
 
-import java.awt.*;
-import java.io.Console;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -135,6 +133,7 @@ public class Peer {
                             System.out.println("Usuário adicionado à lista de contatos");
                             break;
                         case "LOGOUT": // Alguem fez logout. Vamos retirar essa pessoa da nossa lista de contatos
+                            System.out.println(args[1]);
                             contatos.remove(new Contato(args[1]));
                             break;
 
@@ -171,11 +170,11 @@ public class Peer {
 
     private static void connect() throws IOException
     {
-        grupo = InetAddress.getByName("224.0.0.1");
+        grupo = InetAddress.getByName("239.0.0.1");
 
         clientSocket = new DatagramSocket();
 
-        address = InetAddress.getLocalHost();
+        address = InetAddress.getByName("172.20.10.3");
 
         multicastSocket = new MulticastSocket(groupPort);
     }
@@ -202,8 +201,9 @@ public class Peer {
 
             if(args[0].equals("talkTo"))
             {
-                Thread chat = new Thread( new Chat(args[1]+","+args[2]+","+args[3]) );
-                chat.start();
+                Chat chat = new Chat(args[1]+","+args[2]+","+args[3]);
+                chat.run();
+                continue;
             }
 
             sendMessage(command);
